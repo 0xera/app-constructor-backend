@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+
+  app-constructor-backend:
+    build: ./
+    command: ./script/waiting-for-postgres.sh db ./app-constructor-backend
+    ports:
+      - 443:443
+    depends_on:
+      - db
+    environment:
+      - DB_PASSWORD=qwerty
+
+  db:
+    restart: always
+    image: postgres:latest
+    volumes:
+      - ./.database/postgres/data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=qwerty
+    ports:
+      - 5436:5432
