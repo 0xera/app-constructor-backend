@@ -1,8 +1,10 @@
 package main
 
 import (
-	"github.com/0xera/app-constructor-backend/api"
-	"github.com/0xera/app-constructor-backend/auth"
+	"app-constructor-backend/api"
+	"app-constructor-backend/auth"
+	"app-constructor-backend/repository"
+	"github.com/joho/godotenv"
 	"github.com/labstack/gommon/log"
 	"github.com/spf13/viper"
 )
@@ -13,15 +15,27 @@ func main() {
 		log.Fatal(err)
 	}
 
+	if err := godotenv.Load(); err != nil {
+		log.Fatal(err)
+	}
+
 	jwtService := &auth.JwtService{}
-	googleOauthService := auth.CreateService(jwtService)
+	repo, err := repository.CreateRepository()
+	googleOauthService := auth.CreateService(jwtService, repo)
+
+	if err = initConfig(); err != nil {
+		log.Fatal(err)
+	}
 
 	apiService := &api.Service{
+		Repository:         repo,
 		JwtService:         jwtService,
 		GoogleOauthService: googleOauthService,
 	}
 
 	apiService.Serve()
+
+	repo.DestroyDB()
 }
 func initConfig() error {
 	viper.AddConfigPath("config")

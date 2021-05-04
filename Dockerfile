@@ -1,13 +1,10 @@
-#!/bin/bash
-
 FROM golang:1.16.3
 
+ENV GOPATH=/
 ENV GO111MODULE=on
 
-
-WORKDIR /cmd
-
 COPY . .
+
 
 RUN apt-get update
 RUN apt-get -y install postgresql-client

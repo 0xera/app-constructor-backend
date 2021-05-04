@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"app-constructor-backend/model"
 	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
@@ -12,36 +13,26 @@ import (
 
 type JwtService struct {
 	config     middleware.JWTConfig
-	claimsType UserClaims
-}
-
-type UserDataJwt struct {
-	Sub   string `json:"sub"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
-}
-type UserClaims struct {
-	UserDataJwt
-	jwt.StandardClaims
+	claimsType model.UserClaims
 }
 
 func (service JwtService) CreateMiddleware() echo.MiddlewareFunc {
 	config := middleware.JWTConfig{
-		Claims:     &UserClaims{},
+		Claims:     &model.UserClaims{},
 		SigningKey: []byte(viper.GetString("secretJwt")),
 	}
 	return middleware.JWTWithConfig(config)
 }
 
-func (service *JwtService) CreateTokensPair(userDataJwt UserDataJwt) (map[string]string, error) {
-	userClaimsAccess := UserClaims{
+func (service *JwtService) CreateTokensPair(userDataJwt model.UserDataJwt) (map[string]string, error) {
+	userClaimsAccess := model.UserClaims{
 		UserDataJwt: userDataJwt,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Minute * 30).Unix(),
 		},
 	}
 
-	userClaimsRefresh := &UserClaims{
+	userClaimsRefresh := &model.UserClaims{
 		UserDataJwt: userDataJwt,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 70).Unix(),
@@ -73,7 +64,7 @@ func (service *JwtService) RefreshToken(c echo.Context) error {
 		return c.JSON(http.StatusBadGateway, "not valid token")
 	}
 
-	token, err := jwt.ParseWithClaims(tokenReq, &UserClaims{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenReq, &model.UserClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("invalid signing")
 		}
@@ -84,10 +75,10 @@ func (service *JwtService) RefreshToken(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, "token parse error")
 	}
 
-	userClaims, ok := token.Claims.(*UserClaims)
+	userClaims, ok := token.Claims.(*model.UserClaims)
 
 	if ok && token.Valid {
-		newTokenPair, err := service.CreateTokensPair(UserDataJwt{
+		newTokenPair, err := service.CreateTokensPair(model.UserDataJwt{
 			userClaims.Sub,
 			userClaims.Name,
 			userClaims.Email,

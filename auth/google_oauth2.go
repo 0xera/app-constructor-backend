@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"app-constructor-backend/model"
+	"app-constructor-backend/repository"
 	"context"
 	"crypto/rand"
 	"encoding/json"
@@ -15,12 +17,14 @@ import (
 
 type GoogleOauthService struct {
 	JwtService  *JwtService
+	repo        *repository.Repository
 	oauthConfig *oauth2.Config
 }
 
-func CreateService(service *JwtService) *GoogleOauthService {
+func CreateService(service *JwtService, repo *repository.Repository) *GoogleOauthService {
 	return &GoogleOauthService{
 		service,
+		repo,
 		&oauth2.Config{
 			ClientID:     viper.GetString("clientId"),
 			ClientSecret: viper.GetString("clientSecret"),
@@ -61,10 +65,16 @@ func (service *GoogleOauthService) Login(echoContext echo.Context) error {
 		return echoContext.JSON(http.StatusInternalServerError, err)
 	}
 
+	err = service.repo.AddUser(userDataJwt)
+
+	if err != nil {
+		return echoContext.JSON(http.StatusInternalServerError, err)
+	}
+
 	return echoContext.JSON(http.StatusOK, newTokenPair)
 }
 
-func (service *GoogleOauthService) requestGoogleProfileData(token *oauth2.Token) (*UserDataJwt, error) {
+func (service *GoogleOauthService) requestGoogleProfileData(token *oauth2.Token) (*model.UserDataJwt, error) {
 	client := service.oauthConfig.Client(context.Background(), token)
 	res, err := client.Get("https://www.googleapis.com/oauth2/v1/userinfo?alt=json")
 	if err != nil {
@@ -76,7 +86,7 @@ func (service *GoogleOauthService) requestGoogleProfileData(token *oauth2.Token)
 		}
 	}(res.Body)
 
-	userDataJwt := &UserDataJwt{}
+	userDataJwt := &model.UserDataJwt{}
 	err = json.NewDecoder(res.Body).Decode(&userDataJwt)
 	if err != nil {
 		return nil, err
