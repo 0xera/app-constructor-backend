@@ -7,7 +7,6 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo"
 	_ "github.com/lib/pq"
-	"github.com/spf13/viper"
 	"log"
 	"net/http"
 	"os"
@@ -19,20 +18,23 @@ type Repository struct {
 
 func CreateRepository() (*Repository, error) {
 	value := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
-		viper.GetString("db.username"),
+		os.Getenv("DB_USERNAME"),
 		os.Getenv("DB_PASSWORD"),
-		viper.GetString("db.host"),
-		viper.GetString("db.port"),
-		viper.GetString("db.name"),
-		viper.GetString("db.ssl"))
+		os.Getenv("POSTGRES_NAME"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_NAME"),
+		os.Getenv("DB_SSL_MODE"))
 	db, err := sqlx.Open("postgres", value)
 
 	if err != nil {
+		log.Fatal(err)
 		return nil, err
 	}
 
 	err = db.Ping()
 	if err != nil {
+		log.Fatal(err)
+
 		return nil, err
 	}
 	return &Repository{db}, nil

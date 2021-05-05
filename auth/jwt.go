@@ -6,8 +6,8 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
-	"github.com/spf13/viper"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -19,7 +19,7 @@ type JwtService struct {
 func (service JwtService) CreateMiddleware() echo.MiddlewareFunc {
 	config := middleware.JWTConfig{
 		Claims:     &model.UserClaims{},
-		SigningKey: []byte(viper.GetString("secretJwt")),
+		SigningKey: []byte(os.Getenv("SECRET_JWT")),
 	}
 	return middleware.JWTWithConfig(config)
 }
@@ -42,11 +42,11 @@ func (service *JwtService) CreateTokensPair(userDataJwt model.UserDataJwt) (map[
 	var accessToken string
 	var refreshToken string
 	var err error
-	accessToken, err = jwt.NewWithClaims(jwt.SigningMethodHS256, userClaimsAccess).SignedString([]byte(viper.GetString("secretJwt")))
+	accessToken, err = jwt.NewWithClaims(jwt.SigningMethodHS256, userClaimsAccess).SignedString([]byte(os.Getenv("SECRET_JWT")))
 	if err != nil {
 		return nil, err
 	}
-	refreshToken, err = jwt.NewWithClaims(jwt.SigningMethodHS256, userClaimsRefresh).SignedString([]byte(viper.GetString("secretJwt")))
+	refreshToken, err = jwt.NewWithClaims(jwt.SigningMethodHS256, userClaimsRefresh).SignedString([]byte(os.Getenv("SECRET_JWT")))
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func (service *JwtService) RefreshToken(c echo.Context) error {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("invalid signing")
 		}
-		return []byte(viper.GetString("secretJwt")), nil
+		return []byte(os.Getenv("SECRET_JWT")), nil
 	})
 
 	if err != nil {

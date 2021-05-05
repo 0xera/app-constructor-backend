@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"net/http"
+	"os"
 )
 
 type Service struct {
@@ -25,8 +26,13 @@ func (service *Service) Serve() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:8080"},
+		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
+	}))
+
 	e.GET("/", accessible)
-	e.GET("/login/google", service.GoogleOauthService.Login)
+	e.GET(os.Getenv("REDIRECT_PATH"), service.GoogleOauthService.Login)
 	e.GET("/login/google/start", service.GoogleOauthService.AuthUrl)
 	e.GET("/login/refresh/:refresh_token", service.JwtService.RefreshToken)
 
@@ -40,6 +46,6 @@ func (service *Service) Serve() {
 
 	r.POST("/project/build", service.Repository.Restricted)
 
-	e.Logger.Fatal(e.Start(":443"))
+	e.Logger.Fatal(e.Start(os.Getenv("HOST") + ":" + os.Getenv("SERVER_PORT")))
 
 }

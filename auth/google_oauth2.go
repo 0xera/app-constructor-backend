@@ -8,11 +8,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/labstack/echo"
-	"github.com/spf13/viper"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"io"
 	"net/http"
+	"os"
 )
 
 type GoogleOauthService struct {
@@ -26,9 +26,9 @@ func CreateService(service *JwtService, repo *repository.Repository) *GoogleOaut
 		service,
 		repo,
 		&oauth2.Config{
-			ClientID:     viper.GetString("clientId"),
-			ClientSecret: viper.GetString("clientSecret"),
-			RedirectURL:  viper.GetString("redirectUrl"),
+			ClientID:     os.Getenv("CLIENT_ID"),
+			ClientSecret: os.Getenv("CLIENT_SECRET"),
+			RedirectURL:  os.Getenv("REDIRECT_URL"),
 			Scopes: []string{
 				"https://www.googleapis.com/auth/userinfo.email",
 				"https://www.googleapis.com/auth/userinfo.profile",
@@ -45,7 +45,10 @@ func stateGenerator() string {
 }
 
 func (service *GoogleOauthService) AuthUrl(echo echo.Context) error {
-	return echo.Redirect(http.StatusPermanentRedirect, service.oauthConfig.AuthCodeURL(stateGenerator()))
+	return echo.JSON(http.StatusOK,
+		map[string]string{
+			"authUrl": service.oauthConfig.AuthCodeURL(stateGenerator()),
+		})
 }
 
 func (service *GoogleOauthService) Login(echoContext echo.Context) error {

@@ -6,14 +6,9 @@ import (
 	"app-constructor-backend/repository"
 	"github.com/joho/godotenv"
 	"github.com/labstack/gommon/log"
-	"github.com/spf13/viper"
 )
 
 func main() {
-
-	if err := initConfig(); err != nil {
-		log.Fatal(err)
-	}
 
 	if err := godotenv.Load(); err != nil {
 		log.Fatal(err)
@@ -23,7 +18,7 @@ func main() {
 	repo, err := repository.CreateRepository()
 	googleOauthService := auth.CreateService(jwtService, repo)
 
-	if err = initConfig(); err != nil {
+	if err != nil {
 		log.Fatal(err)
 	}
 
@@ -36,9 +31,4 @@ func main() {
 	apiService.Serve()
 
 	repo.DestroyDB()
-}
-func initConfig() error {
-	viper.AddConfigPath("config")
-	viper.SetConfigName("config")
-	return viper.ReadInConfig()
 }
