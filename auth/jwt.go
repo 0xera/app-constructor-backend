@@ -79,9 +79,9 @@ func (service *JwtService) RefreshToken(c echo.Context) error {
 
 	if ok && token.Valid {
 		newTokenPair, err := service.CreateTokensPair(model.UserDataJwt{
-			userClaims.Sub,
-			userClaims.Name,
-			userClaims.Email,
+			Sub:   userClaims.Sub,
+			Name:  userClaims.Name,
+			Email: userClaims.Email,
 		})
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, "im done")

@@ -41,8 +41,8 @@ func CreateRepository() (*Repository, error) {
 }
 
 func (r *Repository) CreateProject(context echo.Context) error {
-	project := &model.Project{}
-	if err := context.Bind(project); err != nil {
+	project := echo.Map{}
+	if err := context.Bind(&project); err != nil {
 		return context.String(http.StatusBadRequest, "bind")
 	}
 	tx, err := r.database.Begin()
@@ -51,22 +51,22 @@ func (r *Repository) CreateProject(context echo.Context) error {
 	}
 	claims := getUserClaims(context)
 	var id int
-	row := tx.QueryRow("insert into project(id, name) values ($1, $2) returning _id", project.Id, project.Name)
+	row := tx.QueryRow("insert into project(name) values ($1) returning id", project["name"])
 	if err := row.Scan(&id); err != nil {
 		_ = tx.Rollback()
-		return context.String(http.StatusBadRequest, "create1")
+		return err
 	}
 
 	_, err = tx.Exec("insert into user_projects(user_id, project_id) values ($1, $2)", claims.Sub, id)
 	if err != nil {
-		return context.String(http.StatusBadRequest, "create2")
+		return err
 	}
 	err = tx.Commit()
 	if err != nil {
-		return context.String(http.StatusBadRequest, "commit")
+		return err
 	}
 	return context.JSON(http.StatusOK, echo.Map{
-		"isCreate": true,
+		"id": id,
 	})
 }
 
@@ -89,7 +89,7 @@ func (r *Repository) SaveProject(context echo.Context) error {
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("update project set app = $1 where _id = $2", request.Project.App, claims.Sub)
+	_, err = tx.Exec("update project set app = $1 where id = $2", request.Project.App, request.Project.Id)
 	if err != nil {
 		return err
 	}
@@ -110,7 +110,7 @@ func (r *Repository) SaveProject(context echo.Context) error {
 
 func (r *Repository) DeleteProject(context echo.Context) error {
 	request := echo.Map{}
-	if err := context.Bind(request); err != nil {
+	if err := context.Bind(&request); err != nil {
 		return context.String(http.StatusBadRequest, "")
 	}
 
@@ -120,13 +120,13 @@ func (r *Repository) DeleteProject(context echo.Context) error {
 		return err
 	}
 	var id int
-	row := tx.QueryRow("select _id from project inner join user_projects up on project._id = up.project_id where up.user_id = $1 and id = $2;", claims.Sub, request["id"])
+	row := tx.QueryRow("select id from project inner join user_projects up on project.id = up.project_id where up.user_id = $1 and id = $2;", claims.Sub, request["id"])
 	if err := row.Scan(&id); err != nil {
 		err := tx.Rollback()
 		return err
 	}
 
-	_, err = tx.Exec("delete from project where _id = $1", id)
+	_, err = tx.Exec("delete from project where id = $1", id)
 	if err != nil {
 		return err
 	}
@@ -147,7 +147,7 @@ func (r *Repository) GetProjects(context echo.Context) error {
 
 	claims := getUserClaims(context)
 
-	err := r.database.Select(&projects, "select project.id, project.name, project.app from project inner join user_projects up on project._id = up.project_id where up.user_id = $1", claims.Sub)
+	err := r.database.Select(&projects, "select project.id, project.name, project.app from project inner join user_projects up on project.id = up.project_id where up.user_id = $1", claims.Sub)
 	if err != nil {
 	}
 	var widgetsCount int
