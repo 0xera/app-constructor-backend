@@ -5,12 +5,12 @@ import (
 	"app-constructor-backend/repository"
 	"context"
 	"crypto/rand"
-	"encoding/json"
 	"fmt"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 )
@@ -90,7 +90,9 @@ func (service *GoogleOauthService) requestGoogleProfileData(token *oauth2.Token)
 	}(res.Body)
 
 	userDataJwt := &model.UserDataJwt{}
-	err = json.NewDecoder(res.Body).Decode(&userDataJwt)
+	bytes, err := ioutil.ReadAll(res.Body)
+
+	err = userDataJwt.UnmarshalJSON(bytes)
 	if err != nil {
 		return nil, err
 	}

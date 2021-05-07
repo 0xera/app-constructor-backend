@@ -3,8 +3,8 @@ package api
 import (
 	"app-constructor-backend/auth"
 	"app-constructor-backend/repository"
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"net/http"
 	"os"
 )
@@ -21,6 +21,9 @@ func accessible(c echo.Context) error {
 
 func (service *Service) Serve() {
 
+	socketService := NewSocketService(service.Repository, service.JwtService)
+	go socketService.Run()
+
 	e := echo.New()
 	e.Use(middleware.Secure())
 	e.Use(middleware.Logger())
@@ -34,9 +37,11 @@ func (service *Service) Serve() {
 	e.GET("/", accessible)
 	e.GET(os.Getenv("REDIRECT_PATH"), service.GoogleOauthService.Login)
 	e.GET("/login/google/start", service.GoogleOauthService.AuthUrl)
-	e.GET("/login/refresh/:refresh_token", service.JwtService.RefreshToken)
+	e.GET("/login/refresh/:refreshToken", service.JwtService.RefreshToken)
 
 	r := e.Group("/main", service.JwtService.CreateMiddleware())
+
+	r.GET("/ws/token", service.JwtService.SocketToken)
 
 	r.GET("/projects", service.Repository.GetProjects)
 
@@ -45,6 +50,8 @@ func (service *Service) Serve() {
 	r.POST("/project/create", service.Repository.CreateProject)
 
 	r.POST("/project/build", service.Repository.Restricted)
+
+	e.GET("ws/:token", socketService.Connect)
 
 	e.Logger.Fatal(e.Start(os.Getenv("HOST") + ":" + os.Getenv("SERVER_PORT")))
 

@@ -1,7 +1,7 @@
 create table if not exists project
 (
-    id serial primary key not null,
-    name varchar            not null,
+    id   serial primary key not null,
+    name varchar unique     not null,
     app  varchar default '{}'
 );
 
@@ -20,4 +20,3 @@ create table if not exists user_projects
 );
 
 create unique index user_index on user_data (id, email);
-
