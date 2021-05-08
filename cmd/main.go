@@ -30,5 +30,5 @@ func main() {
 
 	apiService.Serve()
 
-	repo.DestroyDB()
+	repo.CloseDB()
 }

@@ -6,13 +6,13 @@ import (
 )
 
 type Client struct {
-	service  *SocketService
+	service  *SocketHub
 	addr     net.Addr
 	socket   *websocket.Conn
 	outbound chan []byte
 }
 
-func newClient(hub *SocketService, socket *websocket.Conn) *Client {
+func newClient(hub *SocketHub, socket *websocket.Conn) *Client {
 	return &Client{
 		service:  hub,
 		socket:   socket,

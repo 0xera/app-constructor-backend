@@ -114,24 +114,7 @@ func (r *Repository) DeleteProject(context echo.Context) error {
 		return context.String(http.StatusBadRequest, "")
 	}
 
-	claims := getUserClaims(context)
-	tx, err := r.database.Begin()
-	if err != nil {
-		return err
-	}
-	var id int
-	row := tx.QueryRow("select id from project inner join user_projects up on project.id = up.project_id where up.user_id = $1 and id = $2;", claims.Sub, request["id"])
-	if err := row.Scan(&id); err != nil {
-		err := tx.Rollback()
-		return err
-	}
-
-	_, err = tx.Exec("delete from project where id = $1", id)
-	if err != nil {
-		return err
-	}
-
-	err = tx.Commit()
+	_, err := r.database.Exec("delete from project where id = $1", request["id"])
 	if err != nil {
 		return err
 	}
@@ -141,25 +124,25 @@ func (r *Repository) DeleteProject(context echo.Context) error {
 	})
 }
 
-func (r *Repository) GetProjects(context echo.Context) error {
+func (r *Repository) GetProjects(subUser string) ([]model.Project, error) {
 
 	var projects []model.Project
 
-	claims := getUserClaims(context)
-
-	err := r.database.Select(&projects, "select project.id, project.name, project.app from project inner join user_projects up on project.id = up.project_id where up.user_id = $1", claims.Sub)
+	err := r.database.Select(&projects, "select project.id, project.name, project.app from project inner join user_projects up on project.id = up.project_id where up.user_id = $1", subUser)
 	if err != nil {
+		return nil, err
 	}
+	return projects, nil
+}
+
+func (r *Repository) GetWidgetsCount(subUser string) (int, error) {
 	var widgetsCount int
 
-	err = r.database.Get(&widgetsCount, "select widgets_count from user_data where id = $1", claims.Sub)
+	err := r.database.Get(&widgetsCount, "select widgets_count from user_data where id = $1", subUser)
 	if err != nil {
+		return 0, err
 	}
-
-	return context.JSON(http.StatusOK, model.Response{
-		WidgetsCount: widgetsCount,
-		Projects:     projects,
-	})
+	return widgetsCount, nil
 }
 
 func getUserClaims(c echo.Context) *model.UserClaims {
@@ -173,8 +156,69 @@ func (r *Repository) Restricted(c echo.Context) error {
 	return c.String(http.StatusOK, "Welcome "+claims.Email+"!")
 }
 
-func (r *Repository) DestroyDB() {
+func (r *Repository) CloseDB() {
 	if err := r.database.Close(); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func (r *Repository) UpdateUserProjects(userSub string, response *model.Response) {
+	tx, err := r.database.Begin()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	_, err = tx.Exec("update user_data set widgets_count = $1 where id =$2", response.WidgetsCount, userSub)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	projects, err := r.GetProjects(userSub)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	intersection := Intersection(projects, response.Projects)
+
+	for _, projectUpdate := range intersection {
+		_, err = tx.Exec("update project set app = $1 where id = $2", projectUpdate.App, projectUpdate.Id)
+	}
+	except := Except(projects, response.Projects)
+	for _, projectDelete := range except {
+		_, err = tx.Exec("delete from project where id = $1", projectDelete.Id)
+
+	}
+	err = tx.Commit()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+}
+func Intersection(a, b []model.Project) (c []model.Project) {
+	m := make(map[int]bool)
+
+	for _, item := range a {
+		m[item.Id] = true
+	}
+
+	for _, item := range b {
+		if _, ok := m[item.Id]; ok {
+			c = append(c, item)
+		}
+	}
+	return c
+}
+func Except(a, b []model.Project) (c []model.Project) {
+	m := make(map[int]bool)
+
+	for _, item := range b {
+		m[item.Id] = true
+	}
+
+	for _, item := range a {
+		if _, ok := m[item.Id]; !ok {
+			c = append(c, item)
+		}
+	}
+	return c
 }

@@ -22,7 +22,6 @@ func accessible(c echo.Context) error {
 func (service *Service) Serve() {
 
 	socketService := NewSocketService(service.Repository, service.JwtService)
-	go socketService.Run()
 
 	e := echo.New()
 	e.Use(middleware.Secure())
@@ -43,10 +42,9 @@ func (service *Service) Serve() {
 
 	r.GET("/ws/token", service.JwtService.SocketToken)
 
-	r.GET("/projects", service.Repository.GetProjects)
-
-	r.POST("/project/save", service.Repository.SaveProject)
-	r.POST("/project/delete", service.Repository.DeleteProject)
+	//r.GET("/projects", service.Repository.GetProjects)
+	//r.POST("/project/save", service.Repository.SaveProject)
+	//r.POST("/project/delete", service.Repository.DeleteProject)
 	r.POST("/project/create", service.Repository.CreateProject)
 
 	r.POST("/project/build", service.Repository.Restricted)

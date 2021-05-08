@@ -1,7 +1,6 @@
 package model
 
 import (
-	"encoding/json"
 	"github.com/dgrijalva/jwt-go"
 )
 
@@ -19,9 +18,9 @@ type UserClaims struct {
 
 // Project easyjson: json
 type Project struct {
-	Id   int             `json:"id" database:"id"`
-	Name string          `json:"name" database:"name"`
-	App  json.RawMessage `json:"app" database:"app"`
+	Id   int    `json:"id" database:"id"`
+	Name string `json:"name" database:"name"`
+	App  string `json:"app" database:"app"`
 }
 
 // RequestBody easyjson: json

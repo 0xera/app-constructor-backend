@@ -464,9 +464,7 @@ func easyjson9e1087fdDecodeAppConstructorBackendModel4(in *jlexer.Lexer, out *Pr
 		case "name":
 			out.Name = string(in.String())
 		case "app":
-			if data := in.Raw(); in.Ok() {
-				in.AddError((out.App).UnmarshalJSON(data))
-			}
+			out.App = string(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -494,7 +492,7 @@ func easyjson9e1087fdEncodeAppConstructorBackendModel4(out *jwriter.Writer, in P
 	{
 		const prefix string = ",\"app\":"
 		out.RawString(prefix)
-		out.Raw((in.App).MarshalJSON())
+		out.String(string(in.App))
 	}
 	out.RawByte('}')
 }
