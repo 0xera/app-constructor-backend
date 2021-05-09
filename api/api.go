@@ -3,6 +3,7 @@ package api
 import (
 	"app-constructor-backend/auth"
 	"app-constructor-backend/repository"
+	"app-constructor-backend/task"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"net/http"
@@ -13,6 +14,8 @@ type Service struct {
 	Repository         *repository.Repository
 	JwtService         *auth.JwtService
 	GoogleOauthService *auth.GoogleOauthService
+	SocketService      *SocketService
+	TaskService        *task.Service
 }
 
 func accessible(c echo.Context) error {
@@ -20,8 +23,6 @@ func accessible(c echo.Context) error {
 }
 
 func (service *Service) Serve() {
-
-	socketService := NewSocketService(service.Repository, service.JwtService)
 
 	e := echo.New()
 	e.Use(middleware.Secure())
@@ -46,10 +47,12 @@ func (service *Service) Serve() {
 	//r.POST("/project/save", service.Repository.SaveProject)
 	//r.POST("/project/delete", service.Repository.DeleteProject)
 	r.POST("/project/create", service.Repository.CreateProject)
+	r.GET("/project/download/:name", service.Repository.DownloadProject)
 
 	r.POST("/project/build", service.Repository.Restricted)
 
-	e.GET("ws/:token", socketService.Connect)
+	e.GET("ws/:token", service.SocketService.ConnectToCollaborate)
+	e.GET("ws/build/:token", service.SocketService.ConnectToBuild)
 
 	e.Logger.Fatal(e.Start(os.Getenv("HOST") + ":" + os.Getenv("SERVER_PORT")))
 

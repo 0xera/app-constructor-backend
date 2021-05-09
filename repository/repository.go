@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 )
 
 type Repository struct {
@@ -194,6 +195,28 @@ func (r *Repository) UpdateUserProjects(userSub string, response *model.Response
 		return
 	}
 }
+
+func (r *Repository) DownloadProject(c echo.Context) error {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*model.UserClaims)
+	name := c.Param("name")
+	if name == "" {
+		return c.JSON(http.StatusBadRequest, "not valid name")
+	}
+
+	filePath := filepath.FromSlash("result/" + claims.Sub + "/" + name)
+
+	err := c.File(filePath)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, "server cant attach file. please retry")
+	}
+	err = os.Remove(filePath)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return nil
+}
+
 func Intersection(a, b []model.Project) (c []model.Project) {
 	m := make(map[int]bool)
 

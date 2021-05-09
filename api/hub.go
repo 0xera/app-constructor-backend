@@ -58,10 +58,9 @@ func (s *SocketHub) onConnect(client *Client) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(count)
 
 	projects, err := s.socketService.repository.GetProjects(s.subUser)
-	fmt.Println(projects)
+
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -93,7 +92,6 @@ func (s *SocketHub) onMessage(data []byte, client *Client) {
 	if err := r.UnmarshalJSON(data); err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(r)
 
 	go s.socketService.repository.UpdateUserProjects(s.subUser, r)
 
@@ -101,7 +99,6 @@ func (s *SocketHub) onMessage(data []byte, client *Client) {
 	if err != nil {
 		return
 	}
-	fmt.Println(bytes)
 
 	s.broadcast(bytes, client)
 

@@ -4,8 +4,10 @@ import (
 	"app-constructor-backend/api"
 	"app-constructor-backend/auth"
 	"app-constructor-backend/repository"
+	"app-constructor-backend/task"
 	"github.com/joho/godotenv"
 	"github.com/labstack/gommon/log"
+	"os"
 )
 
 func main() {
@@ -21,14 +23,29 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	taskService, err := task.NewTaskServer()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	socketService := api.NewSocketService(taskService, repo, jwtService)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	apiService := &api.Service{
 		Repository:         repo,
 		JwtService:         jwtService,
 		GoogleOauthService: googleOauthService,
+		SocketService:      socketService,
+		TaskService:        taskService,
 	}
+	if len(os.Args) == 2 && os.Args[1] == "worker" {
+		err = taskService.RunWorkers()
 
-	apiService.Serve()
+	} else {
+		apiService.Serve()
+	}
 
 	repo.CloseDB()
 }
