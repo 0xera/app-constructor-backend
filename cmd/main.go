@@ -23,7 +23,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	taskService, err := task.NewTaskServer()
+	taskService, err := task.NewTaskServer(repo)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -41,10 +41,10 @@ func main() {
 		TaskService:        taskService,
 	}
 	if len(os.Args) == 2 && os.Args[1] == "worker" {
+		apiService.Serve()
+	} else {
 		err = taskService.RunWorkers()
 
-	} else {
-		apiService.Serve()
 	}
 
 	repo.CloseDB()

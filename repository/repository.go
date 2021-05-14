@@ -136,6 +136,17 @@ func (r *Repository) GetProjects(subUser string) ([]model.Project, error) {
 	return projects, nil
 }
 
+func (r *Repository) GetProject(subUser string, projectId int) (*model.Project, error) {
+
+	project := &model.Project{}
+
+	err := r.database.Get(project, "select project.id, project.name, project.app from project inner join user_projects up on project.id = $1 where up.user_id = $2 limit 1", projectId, subUser)
+	if err != nil {
+		return nil, err
+	}
+	return project, nil
+}
+
 func (r *Repository) GetWidgetsCount(subUser string) (int, error) {
 	var widgetsCount int
 
