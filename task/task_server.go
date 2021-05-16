@@ -9,6 +9,7 @@ import (
 	"github.com/RichardKnop/machinery/v1/config"
 	"github.com/RichardKnop/machinery/v1/tasks"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -143,7 +144,7 @@ func build(userId string, projectId int, project string) (string, error) {
 		return "", err
 	}
 
-	stringsResPath = filepath.FromSlash(templatesDir + "/AppConstructor/app/src/build.gradle")
+	stringsResPath = filepath.FromSlash(templatesDir + "/AppConstructor/app/build.gradle")
 	read, err = ioutil.ReadFile(stringsResPath)
 	if err != nil {
 		return "", err
@@ -152,6 +153,12 @@ func build(userId string, projectId int, project string) (string, error) {
 	newContents = strings.Replace(string(read), "com.app.constructor", "com.app.constructor"+fakeId+userId, -1)
 
 	fmt.Println(newContents)
+
+	marshal, err := proto.Marshal(app)
+	err = ioutil.WriteFile(filepath.FromSlash(templatesDir+"/AppConstructor/app/src/main/assets/data.bin"), marshal, 0)
+	if err != nil {
+		return "", err
+	}
 
 	err = ioutil.WriteFile(stringsResPath, []byte(newContents), 0)
 	if err != nil {

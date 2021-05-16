@@ -44,10 +44,10 @@ var (
 
 func (g IconGenerator) generateIcon(a *pb.App, templatesDir string) error {
 
-	var iconProp *pb.App_Props
+	var iconProp *pb.Props
 
 	for _, prop := range a.Props {
-		if prop.Name == "Icon png link" {
+		if *prop.Name == "Icon png link" {
 			iconProp = prop
 			break
 		}
@@ -59,7 +59,7 @@ func (g IconGenerator) generateIcon(a *pb.App, templatesDir string) error {
 
 	iconPath := filepath.FromSlash(templatesDir + "/icon.png")
 
-	err := downloadFile(iconProp.Value, iconPath)
+	err := downloadFile(*iconProp.Value, iconPath)
 	if err != nil {
 		return err
 	}

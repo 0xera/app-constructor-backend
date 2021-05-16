@@ -20,19 +20,224 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type Props struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id    *uint32 `protobuf:"varint,1,req,name=id" json:"id,omitempty"`
+	Type  *string `protobuf:"bytes,2,req,name=type" json:"type,omitempty"`
+	Name  *string `protobuf:"bytes,3,req,name=name" json:"name,omitempty"`
+	Value *string `protobuf:"bytes,4,req,name=value" json:"value,omitempty"`
+}
+
+func (x *Props) Reset() {
+	*x = Props{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_app_proto_msgTypes[0]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Props) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Props) ProtoMessage() {}
+
+func (x *Props) ProtoReflect() protoreflect.Message {
+	mi := &file_app_proto_msgTypes[0]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Props.ProtoReflect.Descriptor instead.
+func (*Props) Descriptor() ([]byte, []int) {
+	return file_app_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *Props) GetId() uint32 {
+	if x != nil && x.Id != nil {
+		return *x.Id
+	}
+	return 0
+}
+
+func (x *Props) GetType() string {
+	if x != nil && x.Type != nil {
+		return *x.Type
+	}
+	return ""
+}
+
+func (x *Props) GetName() string {
+	if x != nil && x.Name != nil {
+		return *x.Name
+	}
+	return ""
+}
+
+func (x *Props) GetValue() string {
+	if x != nil && x.Value != nil {
+		return *x.Value
+	}
+	return ""
+}
+
+type Widgets struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Name  *string  `protobuf:"bytes,1,req,name=name" json:"name,omitempty"`
+	Props []*Props `protobuf:"bytes,2,rep,name=props" json:"props,omitempty"`
+	Id    *uint32  `protobuf:"varint,3,req,name=id" json:"id,omitempty"`
+}
+
+func (x *Widgets) Reset() {
+	*x = Widgets{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_app_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Widgets) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Widgets) ProtoMessage() {}
+
+func (x *Widgets) ProtoReflect() protoreflect.Message {
+	mi := &file_app_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Widgets.ProtoReflect.Descriptor instead.
+func (*Widgets) Descriptor() ([]byte, []int) {
+	return file_app_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *Widgets) GetName() string {
+	if x != nil && x.Name != nil {
+		return *x.Name
+	}
+	return ""
+}
+
+func (x *Widgets) GetProps() []*Props {
+	if x != nil {
+		return x.Props
+	}
+	return nil
+}
+
+func (x *Widgets) GetId() uint32 {
+	if x != nil && x.Id != nil {
+		return *x.Id
+	}
+	return 0
+}
+
+type Screens struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id      *uint32    `protobuf:"varint,1,req,name=id" json:"id,omitempty"`
+	Type    *string    `protobuf:"bytes,2,req,name=type" json:"type,omitempty"`
+	Props   []*Props   `protobuf:"bytes,3,rep,name=props" json:"props,omitempty"`
+	Widgets []*Widgets `protobuf:"bytes,4,rep,name=widgets" json:"widgets,omitempty"`
+}
+
+func (x *Screens) Reset() {
+	*x = Screens{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_app_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Screens) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Screens) ProtoMessage() {}
+
+func (x *Screens) ProtoReflect() protoreflect.Message {
+	mi := &file_app_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Screens.ProtoReflect.Descriptor instead.
+func (*Screens) Descriptor() ([]byte, []int) {
+	return file_app_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *Screens) GetId() uint32 {
+	if x != nil && x.Id != nil {
+		return *x.Id
+	}
+	return 0
+}
+
+func (x *Screens) GetType() string {
+	if x != nil && x.Type != nil {
+		return *x.Type
+	}
+	return ""
+}
+
+func (x *Screens) GetProps() []*Props {
+	if x != nil {
+		return x.Props
+	}
+	return nil
+}
+
+func (x *Screens) GetWidgets() []*Widgets {
+	if x != nil {
+		return x.Widgets
+	}
+	return nil
+}
+
 type App struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Props   []*App_Props   `protobuf:"bytes,1,rep,name=props,proto3" json:"props,omitempty"`
-	Screens []*App_Screens `protobuf:"bytes,2,rep,name=screens,proto3" json:"screens,omitempty"`
+	Props   []*Props   `protobuf:"bytes,1,rep,name=props" json:"props,omitempty"`
+	Screens []*Screens `protobuf:"bytes,2,rep,name=screens" json:"screens,omitempty"`
 }
 
 func (x *App) Reset() {
 	*x = App{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_app_proto_msgTypes[0]
+		mi := &file_app_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -45,7 +250,7 @@ func (x *App) String() string {
 func (*App) ProtoMessage() {}
 
 func (x *App) ProtoReflect() protoreflect.Message {
-	mi := &file_app_proto_msgTypes[0]
+	mi := &file_app_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -58,224 +263,19 @@ func (x *App) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use App.ProtoReflect.Descriptor instead.
 func (*App) Descriptor() ([]byte, []int) {
-	return file_app_proto_rawDescGZIP(), []int{0}
+	return file_app_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *App) GetProps() []*App_Props {
+func (x *App) GetProps() []*Props {
 	if x != nil {
 		return x.Props
 	}
 	return nil
 }
 
-func (x *App) GetScreens() []*App_Screens {
+func (x *App) GetScreens() []*Screens {
 	if x != nil {
 		return x.Screens
-	}
-	return nil
-}
-
-type App_Props struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Id    uint32 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Type  string `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
-	Name  string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	Value string `protobuf:"bytes,4,opt,name=value,proto3" json:"value,omitempty"`
-}
-
-func (x *App_Props) Reset() {
-	*x = App_Props{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_app_proto_msgTypes[1]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *App_Props) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*App_Props) ProtoMessage() {}
-
-func (x *App_Props) ProtoReflect() protoreflect.Message {
-	mi := &file_app_proto_msgTypes[1]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use App_Props.ProtoReflect.Descriptor instead.
-func (*App_Props) Descriptor() ([]byte, []int) {
-	return file_app_proto_rawDescGZIP(), []int{0, 0}
-}
-
-func (x *App_Props) GetId() uint32 {
-	if x != nil {
-		return x.Id
-	}
-	return 0
-}
-
-func (x *App_Props) GetType() string {
-	if x != nil {
-		return x.Type
-	}
-	return ""
-}
-
-func (x *App_Props) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-func (x *App_Props) GetValue() string {
-	if x != nil {
-		return x.Value
-	}
-	return ""
-}
-
-type App_Widgets struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Name  string       `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Props []*App_Props `protobuf:"bytes,2,rep,name=props,proto3" json:"props,omitempty"`
-	Id    uint32       `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty"`
-}
-
-func (x *App_Widgets) Reset() {
-	*x = App_Widgets{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_app_proto_msgTypes[2]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *App_Widgets) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*App_Widgets) ProtoMessage() {}
-
-func (x *App_Widgets) ProtoReflect() protoreflect.Message {
-	mi := &file_app_proto_msgTypes[2]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use App_Widgets.ProtoReflect.Descriptor instead.
-func (*App_Widgets) Descriptor() ([]byte, []int) {
-	return file_app_proto_rawDescGZIP(), []int{0, 1}
-}
-
-func (x *App_Widgets) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-func (x *App_Widgets) GetProps() []*App_Props {
-	if x != nil {
-		return x.Props
-	}
-	return nil
-}
-
-func (x *App_Widgets) GetId() uint32 {
-	if x != nil {
-		return x.Id
-	}
-	return 0
-}
-
-type App_Screens struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Id      uint32         `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Type    string         `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
-	Props   []*App_Props   `protobuf:"bytes,3,rep,name=props,proto3" json:"props,omitempty"`
-	Widgets []*App_Widgets `protobuf:"bytes,4,rep,name=widgets,proto3" json:"widgets,omitempty"`
-}
-
-func (x *App_Screens) Reset() {
-	*x = App_Screens{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_app_proto_msgTypes[3]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *App_Screens) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*App_Screens) ProtoMessage() {}
-
-func (x *App_Screens) ProtoReflect() protoreflect.Message {
-	mi := &file_app_proto_msgTypes[3]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use App_Screens.ProtoReflect.Descriptor instead.
-func (*App_Screens) Descriptor() ([]byte, []int) {
-	return file_app_proto_rawDescGZIP(), []int{0, 2}
-}
-
-func (x *App_Screens) GetId() uint32 {
-	if x != nil {
-		return x.Id
-	}
-	return 0
-}
-
-func (x *App_Screens) GetType() string {
-	if x != nil {
-		return x.Type
-	}
-	return ""
-}
-
-func (x *App_Screens) GetProps() []*App_Props {
-	if x != nil {
-		return x.Props
-	}
-	return nil
-}
-
-func (x *App_Screens) GetWidgets() []*App_Widgets {
-	if x != nil {
-		return x.Widgets
 	}
 	return nil
 }
@@ -284,32 +284,30 @@ var File_app_proto protoreflect.FileDescriptor
 
 var file_app_proto_rawDesc = []byte{
 	0x0a, 0x09, 0x61, 0x70, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x04, 0x74, 0x61, 0x73,
-	0x6b, 0x22, 0x8a, 0x03, 0x0a, 0x03, 0x41, 0x70, 0x70, 0x12, 0x25, 0x0a, 0x05, 0x70, 0x72, 0x6f,
-	0x70, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e,
-	0x41, 0x70, 0x70, 0x2e, 0x50, 0x72, 0x6f, 0x70, 0x73, 0x52, 0x05, 0x70, 0x72, 0x6f, 0x70, 0x73,
-	0x12, 0x2b, 0x0a, 0x07, 0x73, 0x63, 0x72, 0x65, 0x65, 0x6e, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28,
-	0x0b, 0x32, 0x11, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x41, 0x70, 0x70, 0x2e, 0x53, 0x63, 0x72,
-	0x65, 0x65, 0x6e, 0x73, 0x52, 0x07, 0x73, 0x63, 0x72, 0x65, 0x65, 0x6e, 0x73, 0x1a, 0x55, 0x0a,
-	0x05, 0x50, 0x72, 0x6f, 0x70, 0x73, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x0d, 0x52, 0x02, 0x69, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61,
-	0x6d, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x14,
-	0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x76,
-	0x61, 0x6c, 0x75, 0x65, 0x1a, 0x54, 0x0a, 0x07, 0x57, 0x69, 0x64, 0x67, 0x65, 0x74, 0x73, 0x12,
-	0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e,
-	0x61, 0x6d, 0x65, 0x12, 0x25, 0x0a, 0x05, 0x70, 0x72, 0x6f, 0x70, 0x73, 0x18, 0x02, 0x20, 0x03,
-	0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x41, 0x70, 0x70, 0x2e, 0x50, 0x72,
+	0x6b, 0x22, 0x55, 0x0a, 0x05, 0x50, 0x72, 0x6f, 0x70, 0x73, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64,
+	0x18, 0x01, 0x20, 0x02, 0x28, 0x0d, 0x52, 0x02, 0x69, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79,
+	0x70, 0x65, 0x18, 0x02, 0x20, 0x02, 0x28, 0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x12,
+	0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x03, 0x20, 0x02, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61,
+	0x6d, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x04, 0x20, 0x02, 0x28,
+	0x09, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0x50, 0x0a, 0x07, 0x57, 0x69, 0x64, 0x67,
+	0x65, 0x74, 0x73, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x02, 0x28,
+	0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x21, 0x0a, 0x05, 0x70, 0x72, 0x6f, 0x70, 0x73,
+	0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0b, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x50, 0x72,
 	0x6f, 0x70, 0x73, 0x52, 0x05, 0x70, 0x72, 0x6f, 0x70, 0x73, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64,
-	0x18, 0x03, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x02, 0x69, 0x64, 0x1a, 0x81, 0x01, 0x0a, 0x07, 0x53,
-	0x63, 0x72, 0x65, 0x65, 0x6e, 0x73, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x0d, 0x52, 0x02, 0x69, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x25, 0x0a, 0x05, 0x70, 0x72,
-	0x6f, 0x70, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x74, 0x61, 0x73, 0x6b,
-	0x2e, 0x41, 0x70, 0x70, 0x2e, 0x50, 0x72, 0x6f, 0x70, 0x73, 0x52, 0x05, 0x70, 0x72, 0x6f, 0x70,
-	0x73, 0x12, 0x2b, 0x0a, 0x07, 0x77, 0x69, 0x64, 0x67, 0x65, 0x74, 0x73, 0x18, 0x04, 0x20, 0x03,
-	0x28, 0x0b, 0x32, 0x11, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x41, 0x70, 0x70, 0x2e, 0x57, 0x69,
-	0x64, 0x67, 0x65, 0x74, 0x73, 0x52, 0x07, 0x77, 0x69, 0x64, 0x67, 0x65, 0x74, 0x73, 0x42, 0x05,
-	0x5a, 0x03, 0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x18, 0x03, 0x20, 0x02, 0x28, 0x0d, 0x52, 0x02, 0x69, 0x64, 0x22, 0x79, 0x0a, 0x07, 0x53, 0x63,
+	0x72, 0x65, 0x65, 0x6e, 0x73, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x02, 0x28,
+	0x0d, 0x52, 0x02, 0x69, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20,
+	0x02, 0x28, 0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x21, 0x0a, 0x05, 0x70, 0x72, 0x6f,
+	0x70, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0b, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e,
+	0x50, 0x72, 0x6f, 0x70, 0x73, 0x52, 0x05, 0x70, 0x72, 0x6f, 0x70, 0x73, 0x12, 0x27, 0x0a, 0x07,
+	0x77, 0x69, 0x64, 0x67, 0x65, 0x74, 0x73, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0d, 0x2e,
+	0x74, 0x61, 0x73, 0x6b, 0x2e, 0x57, 0x69, 0x64, 0x67, 0x65, 0x74, 0x73, 0x52, 0x07, 0x77, 0x69,
+	0x64, 0x67, 0x65, 0x74, 0x73, 0x22, 0x51, 0x0a, 0x03, 0x41, 0x70, 0x70, 0x12, 0x21, 0x0a, 0x05,
+	0x70, 0x72, 0x6f, 0x70, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0b, 0x2e, 0x74, 0x61,
+	0x73, 0x6b, 0x2e, 0x50, 0x72, 0x6f, 0x70, 0x73, 0x52, 0x05, 0x70, 0x72, 0x6f, 0x70, 0x73, 0x12,
+	0x27, 0x0a, 0x07, 0x73, 0x63, 0x72, 0x65, 0x65, 0x6e, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b,
+	0x32, 0x0d, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x53, 0x63, 0x72, 0x65, 0x65, 0x6e, 0x73, 0x52,
+	0x07, 0x73, 0x63, 0x72, 0x65, 0x65, 0x6e, 0x73, 0x42, 0x05, 0x5a, 0x03, 0x2f, 0x70, 0x62,
 }
 
 var (
@@ -326,17 +324,17 @@ func file_app_proto_rawDescGZIP() []byte {
 
 var file_app_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_app_proto_goTypes = []interface{}{
-	(*App)(nil),         // 0: task.App
-	(*App_Props)(nil),   // 1: task.App.Props
-	(*App_Widgets)(nil), // 2: task.App.Widgets
-	(*App_Screens)(nil), // 3: task.App.Screens
+	(*Props)(nil),   // 0: task.Props
+	(*Widgets)(nil), // 1: task.Widgets
+	(*Screens)(nil), // 2: task.Screens
+	(*App)(nil),     // 3: task.App
 }
 var file_app_proto_depIdxs = []int32{
-	1, // 0: task.App.props:type_name -> task.App.Props
-	3, // 1: task.App.screens:type_name -> task.App.Screens
-	1, // 2: task.App.Widgets.props:type_name -> task.App.Props
-	1, // 3: task.App.Screens.props:type_name -> task.App.Props
-	2, // 4: task.App.Screens.widgets:type_name -> task.App.Widgets
+	0, // 0: task.Widgets.props:type_name -> task.Props
+	0, // 1: task.Screens.props:type_name -> task.Props
+	1, // 2: task.Screens.widgets:type_name -> task.Widgets
+	0, // 3: task.App.props:type_name -> task.Props
+	2, // 4: task.App.screens:type_name -> task.Screens
 	5, // [5:5] is the sub-list for method output_type
 	5, // [5:5] is the sub-list for method input_type
 	5, // [5:5] is the sub-list for extension type_name
@@ -351,7 +349,7 @@ func file_app_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_app_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*App); i {
+			switch v := v.(*Props); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -363,7 +361,7 @@ func file_app_proto_init() {
 			}
 		}
 		file_app_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*App_Props); i {
+			switch v := v.(*Widgets); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -375,7 +373,7 @@ func file_app_proto_init() {
 			}
 		}
 		file_app_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*App_Widgets); i {
+			switch v := v.(*Screens); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -387,7 +385,7 @@ func file_app_proto_init() {
 			}
 		}
 		file_app_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*App_Screens); i {
+			switch v := v.(*App); i {
 			case 0:
 				return &v.state
 			case 1:

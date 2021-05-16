@@ -41,10 +41,9 @@ func main() {
 		TaskService:        taskService,
 	}
 	if len(os.Args) == 2 && os.Args[1] == "worker" {
-		apiService.Serve()
-	} else {
 		err = taskService.RunWorkers()
-
+	} else {
+		apiService.Serve()
 	}
 
 	repo.CloseDB()

@@ -18,15 +18,16 @@ type Repository struct {
 }
 
 func CreateRepository() (*Repository, error) {
-	value := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
-		os.Getenv("DB_USERNAME"),
-		os.Getenv("DB_PASSWORD"),
-		os.Getenv("POSTGRES_NAME"),
-		os.Getenv("DB_PORT"),
-		os.Getenv("DB_NAME"),
-		os.Getenv("DB_SSL_MODE"))
-	db, err := sqlx.Open("postgres", value)
-
+	//value := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
+	//	,
+	//	,
+	//	,
+	//	,
+	//	,
+	//	)
+	db, err := sqlx.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
+		os.Getenv("POSTGRES_NAME"), os.Getenv("DB_PORT"), os.Getenv("DB_USERNAME"),
+		os.Getenv("DB_NAME"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_SSL_MODE")))
 	if err != nil {
 		log.Fatal(err)
 		return nil, err
