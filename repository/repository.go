@@ -2,8 +2,10 @@ package repository
 
 import (
 	"app-constructor-backend/model"
+	"encoding/base64"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/go-redis/redis"
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 	_ "github.com/lib/pq"
@@ -11,20 +13,15 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 )
 
 type Repository struct {
-	database *sqlx.DB
+	database    *sqlx.DB
+	redisClient *redis.Client
 }
 
 func CreateRepository() (*Repository, error) {
-	//value := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
-	//	,
-	//	,
-	//	,
-	//	,
-	//	,
-	//	)
 	db, err := sqlx.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
 		os.Getenv("POSTGRES_NAME"), os.Getenv("DB_PORT"), os.Getenv("DB_USERNAME"),
 		os.Getenv("DB_NAME"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_SSL_MODE")))
@@ -39,7 +36,19 @@ func CreateRepository() (*Repository, error) {
 
 		return nil, err
 	}
-	return &Repository{db}, nil
+
+	client := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: os.Getenv("REDIS_PASSWORD"),
+		DB:       0,
+	})
+	_, err = client.Ping().Result()
+	if err != nil {
+		log.Fatal(err)
+
+		return nil, err
+	}
+	return &Repository{database: db, redisClient: client}, nil
 }
 
 func (r *Repository) CreateProject(context echo.Context) error {
@@ -171,6 +180,8 @@ func (r *Repository) Restricted(c echo.Context) error {
 
 func (r *Repository) CloseDB() {
 	if err := r.database.Close(); err != nil {
+	}
+	if err := r.redisClient.Close(); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -222,11 +233,42 @@ func (r *Repository) DownloadProject(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, "server cant attach file. please retry")
 	}
-	err = os.Remove(filePath)
-	if err != nil {
-		fmt.Println(err)
-	}
+
 	return nil
+}
+
+func (r *Repository) PublishProject(c echo.Context) error {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*model.UserClaims)
+	projectId := c.Param("projectId")
+	if projectId == "" {
+		return c.JSON(http.StatusBadRequest, "not valid projectId")
+	}
+	atoi, err := strconv.Atoi(projectId)
+
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, "not valid projectId")
+	}
+	project, err := r.GetProject(claims.Sub, atoi)
+
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, "not valid projectId")
+	}
+	baseVal := base64.StdEncoding.EncodeToString([]byte(project.App))
+	err = r.redisClient.Set(claims.Sub+projectId, baseVal, 0).Err()
+
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, "not valid projectId")
+	}
+	return c.String(http.StatusOK, "saved")
+}
+
+func (r *Repository) ProjectData(c echo.Context) error {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*model.ClientClaims)
+	val := r.redisClient.Get(claims.UserId + claims.ProjectId).Val()
+	bytes, _ := base64.StdEncoding.DecodeString(val)
+	return c.JSONBlob(http.StatusOK, bytes)
 }
 
 func Intersection(a, b []model.Project) (c []model.Project) {

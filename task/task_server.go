@@ -8,13 +8,14 @@ import (
 	"github.com/RichardKnop/machinery/v1"
 	"github.com/RichardKnop/machinery/v1/config"
 	"github.com/RichardKnop/machinery/v1/tasks"
+	"github.com/dgrijalva/jwt-go"
 	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -43,6 +44,17 @@ func (s *Service) Execute(userId string, projectId int) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	filename := project.Name + strconv.Itoa(projectId) + ".apk"
+	checkFileExist := filepath.FromSlash("result/" + userId + "/" + filename)
+
+	if stat, err := os.Stat(checkFileExist); os.IsExist(err) {
+		sub := time.Now().Sub(stat.ModTime())
+		if sub.Hours() < 72 {
+			return filename, nil
+		} else {
+			_ = os.Remove(filename)
+		}
+	}
 
 	task := tasks.Signature{
 		Name: "build_project",
@@ -52,8 +64,8 @@ func (s *Service) Execute(userId string, projectId int) (string, error) {
 				Value: userId,
 			},
 			{
-				Type:  "int",
-				Value: projectId,
+				Type:  "string",
+				Value: strconv.Itoa(projectId),
 			},
 			{
 				Type:  "string",
@@ -95,7 +107,7 @@ func NewTaskServer(repository *repository.Repository) (*Service, error) {
 	return &Service{server, repository}, nil
 }
 
-func build(userId string, projectId int, project string) (string, error) {
+func build(userId string, projectId string, project string) (string, error) {
 
 	fakeId := fmt.Sprintf("%d", time.Now().Nanosecond())
 	templatesDir := filepath.FromSlash("templates/" + userId + "/" + fakeId)
@@ -137,6 +149,10 @@ func build(userId string, projectId int, project string) (string, error) {
 
 	newContents := strings.Replace(string(read), "AppConstructor", p.Name, -1)
 
+	clientToken, err := newClientToken(userId, projectId)
+	if err != nil {
+		return "", nil
+	}
 	fmt.Println(newContents)
 
 	err = ioutil.WriteFile(stringsResPath, []byte(newContents), 0)
@@ -150,15 +166,17 @@ func build(userId string, projectId int, project string) (string, error) {
 		return "", err
 	}
 
-	newContents = strings.Replace(string(read), "com.app.constructor", "com.app.constructor"+fakeId+userId, -1)
+	newContents = strings.Replace(string(read), "com.app.constructor", "com.app.constructor"+projectId+userId, -1)
+	newContents = strings.Replace(newContents, "replace_token", clientToken, -1)
 
 	fmt.Println(newContents)
 
-	marshal, err := proto.Marshal(app)
-	err = ioutil.WriteFile(filepath.FromSlash(templatesDir+"/AppConstructor/app/src/main/assets/data.bin"), marshal, 0)
-	if err != nil {
-		return "", err
-	}
+	//
+	//marshal, err := proto.Marshal(app)
+	//err = ioutil.WriteFile(filepath.FromSlash(templatesDir+"/AppConstructor/app/src/main/assets/data.bin"), marshal, 0)
+	//if err != nil {
+	//	return "", err
+	//}
 
 	err = ioutil.WriteFile(stringsResPath, []byte(newContents), 0)
 	if err != nil {
@@ -173,7 +191,7 @@ func build(userId string, projectId int, project string) (string, error) {
 			return "", err
 		}
 	}
-	filename := p.Name + fakeId + ".apk"
+	filename := p.Name + projectId + ".apk"
 
 	projectDir := filepath.FromSlash(templatesDir + "/AppConstructor")
 
@@ -206,4 +224,23 @@ func copyDirectory(dir string) error {
 		return err
 	}
 	return nil
+}
+func newClientToken(userId, projectId string) (string, error) {
+	clientJwt := model.ClientJwt{
+		UserId:    userId,
+		ProjectId: projectId,
+	}
+
+	clientClaims := &model.ClientClaims{
+		ClientJwt: clientJwt,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Hour * 100000).Unix(),
+		},
+	}
+
+	t, err := jwt.NewWithClaims(jwt.SigningMethodHS256, clientClaims).SignedString([]byte(os.Getenv("SECRET_JWT_CLIENT")))
+	if err != nil {
+		return "", err
+	}
+	return t, nil
 }

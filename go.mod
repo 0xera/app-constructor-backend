@@ -5,6 +5,7 @@ go 1.16
 require (
 	github.com/RichardKnop/machinery v1.10.5
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/gorilla/websocket v1.4.2
 	github.com/jmoiron/sqlx v1.3.3

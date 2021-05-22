@@ -16,6 +16,16 @@ type UserClaims struct {
 	jwt.StandardClaims
 }
 
+// ClientJwt easyjson: json
+type ClientJwt struct {
+	UserId    string `json:"userId"`
+	ProjectId string `json:"projectId"`
+}
+type ClientClaims struct {
+	ClientJwt
+	jwt.StandardClaims
+}
+
 // Project easyjson: json
 type Project struct {
 	Id   int    `json:"id" database:"id"`

@@ -48,12 +48,16 @@ func (service *Service) Serve() {
 	//r.POST("/project/delete", service.Repository.DeleteProject)
 	r.POST("/project/create", service.Repository.CreateProject)
 	r.GET("/project/download/:name", service.Repository.DownloadProject)
+	r.POST("/project/publish/:projectId", service.Repository.PublishProject)
 
-	r.POST("/project/build", service.Repository.Restricted)
+	//r.POST("/project/build", service.Repository.Restricted)
 
 	e.GET("ws/:token", service.SocketService.ConnectToCollaborate)
 	e.GET("ws/build/:token", service.SocketService.ConnectToBuild)
 
+	clientGroup := e.Group("/user", service.JwtService.CreateClientMiddleware())
+
+	clientGroup.GET("/data", service.Repository.ProjectData)
 	e.Logger.Fatal(e.Start(os.Getenv("HOST") + ":" + os.Getenv("SERVER_PORT")))
 
 }

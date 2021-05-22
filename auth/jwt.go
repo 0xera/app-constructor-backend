@@ -133,3 +133,11 @@ func (service *JwtService) ContainsToken(token string) bool {
 func (service *JwtService) DeleteToken(token string) {
 	delete(tokens, token)
 }
+
+func (service JwtService) CreateClientMiddleware() echo.MiddlewareFunc {
+	config := middleware.JWTConfig{
+		Claims:     &model.ClientClaims{},
+		SigningKey: []byte(os.Getenv("SECRET_JWT_CLIENT")),
+	}
+	return middleware.JWTWithConfig(config)
+}
