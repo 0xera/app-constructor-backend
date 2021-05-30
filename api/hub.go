@@ -73,7 +73,6 @@ func (s *SocketHub) onConnect(client *Client) {
 }
 
 func (s *SocketHub) onDisconnect(client *Client) {
-	log.Println("client disconnected: ", client.socket.RemoteAddr())
 
 	client.close()
 

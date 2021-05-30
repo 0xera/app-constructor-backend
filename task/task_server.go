@@ -171,13 +171,6 @@ func build(userId string, projectId string, project string) (string, error) {
 
 	fmt.Println(newContents)
 
-	//
-	//marshal, err := proto.Marshal(app)
-	//err = ioutil.WriteFile(filepath.FromSlash(templatesDir+"/AppConstructor/app/src/main/assets/data.bin"), marshal, 0)
-	//if err != nil {
-	//	return "", err
-	//}
-
 	err = ioutil.WriteFile(stringsResPath, []byte(newContents), 0)
 	if err != nil {
 		return "", err
